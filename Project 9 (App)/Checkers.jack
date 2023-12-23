@@ -1,0 +1,121 @@
+class Checkers{
+    field int nCols;
+    field int nRows;
+    field int cellWidth;
+    field int cellHeight;
+    field int cellSize;
+    field boolean toDraw;
+    field int memAddress;
+
+    constructor Checkers new(int numCols, int numRows){
+        let nCols = numCols;
+        let nRows = numRows;
+        let cellWidth = (512 / numCols) - 1;
+        let cellHeight = (256 / numRows) - 1;
+        let toDraw = true;
+        return this;
+    }
+
+    method void drawCheckers(){
+        var int cols;
+        var int rows;
+        let cols = 0;
+        let rows = 0;
+        let toDraw = ~(toDraw);
+
+        while(cols < nCols){
+            while(rows < nRows){ 
+                let toDraw = ~(toDraw);
+                do Screen.setColor(toDraw);
+                do Screen.drawRectangle(cols * cellWidth, rows * cellHeight, (cols * cellWidth) + cellWidth, (rows * cellHeight) + cellHeight);
+            let rows = rows + 1;
+            }
+        let toDraw = ~(toDraw);
+        let rows = 0;
+        let cols = cols + 1;
+        }
+        return;
+    }
+
+    method void drawBye() {
+        var int cellSize;
+        var int animationCounter;
+
+        do Screen.setColor(false);
+        do Screen.drawRectangle(0, 0, 511, 255);
+        do Sys.wait(100);
+
+        let cellSize = 32;
+        
+        //Drawing B, starting 1 cols left
+        do Screen.setColor(true);
+        do Screen.drawRectangle(1 * cellSize, 1 * cellSize, (1 * cellSize) + cellSize, (1 * cellSize) + cellSize);
+        do Screen.drawRectangle(1 * cellSize, 2 * cellSize, (1 * cellSize) + cellSize, (2 * cellSize) + cellSize);
+        do Screen.drawRectangle(1 * cellSize, 3 * cellSize, (1 * cellSize) + cellSize, (3 * cellSize) + cellSize);
+        do Screen.drawRectangle(1 * cellSize, 4 * cellSize, (1 * cellSize) + cellSize, (4 * cellSize) + cellSize);
+        do Screen.drawRectangle(1 * cellSize, 5 * cellSize, (1 * cellSize) + cellSize, (5 * cellSize) + cellSize);
+
+        do Screen.drawRectangle(2 * cellSize, 1 * cellSize, (2 * cellSize) + cellSize, (1 * cellSize) + cellSize);
+        do Screen.drawRectangle(3 * cellSize, 1 * cellSize, (3 * cellSize) + cellSize, (1 * cellSize) + cellSize);
+
+        do Screen.drawRectangle(2 * cellSize, 3 * cellSize, (2 * cellSize) + cellSize, (3 * cellSize) + cellSize);
+        do Screen.drawRectangle(3 * cellSize, 3 * cellSize, (3 * cellSize) + cellSize, (3 * cellSize) + cellSize);
+
+        do Screen.drawRectangle(2 * cellSize, 5 * cellSize, (2 * cellSize) + cellSize, (5 * cellSize) + cellSize);
+        do Screen.drawRectangle(3 * cellSize, 5 * cellSize, (3 * cellSize) + cellSize, (5 * cellSize) + cellSize);
+
+        do Screen.drawRectangle(4 * cellSize, 2 * cellSize, (4 * cellSize) + cellSize, (2 * cellSize) + cellSize);
+        do Screen.drawRectangle(4 * cellSize, 4 * cellSize, (4 * cellSize) + cellSize, (4 * cellSize) + cellSize);
+        do Screen.drawRectangle(4 * cellSize, 5 * cellSize, (4 * cellSize) + cellSize, (5 * cellSize) + cellSize);
+
+        // Drawing "Y", starts from 6th, leaving one cell column as a space after "B"
+        do Screen.setColor(true);
+        do Screen.drawRectangle(6 * cellSize, 1 * cellSize, (6 * cellSize) + cellSize, (1 * cellSize) + cellSize);
+        do Screen.drawRectangle(6 * cellSize, 2 * cellSize, (6 * cellSize) + cellSize, (2 * cellSize) + cellSize);
+        do Screen.drawRectangle(7 * cellSize, 3 * cellSize, (7 * cellSize) + cellSize, (3 * cellSize) + cellSize);
+        do Screen.drawRectangle(7 * cellSize, 4 * cellSize, (7 * cellSize) + cellSize, (4 * cellSize) + cellSize);
+        do Screen.drawRectangle(7 * cellSize, 5 * cellSize, (7 * cellSize) + cellSize, (5 * cellSize) + cellSize);
+        do Screen.drawRectangle(8 * cellSize, 1 * cellSize, (8 * cellSize) + cellSize, (1 * cellSize) + cellSize);
+        do Screen.drawRectangle(8 * cellSize, 2 * cellSize, (8 * cellSize) + cellSize, (2 * cellSize) + cellSize);
+
+        // Drawing "E", starts from 10th column, leaving one cell column as a space after "Y"
+        do Screen.drawRectangle(10 * cellSize, 1 * cellSize, (10 * cellSize) + cellSize, (1 * cellSize) + cellSize);
+        do Screen.drawRectangle(10 * cellSize, 2 * cellSize, (10 * cellSize) + cellSize, (2 * cellSize) + cellSize);
+        do Screen.drawRectangle(10 * cellSize, 3 * cellSize, (10 * cellSize) + cellSize, (3 * cellSize) + cellSize);
+        do Screen.drawRectangle(10 * cellSize, 4 * cellSize, (10 * cellSize) + cellSize, (4 * cellSize) + cellSize);
+        do Screen.drawRectangle(10 * cellSize, 5 * cellSize, (10 * cellSize) + cellSize, (5 * cellSize) + cellSize);
+
+        do Screen.drawRectangle(11 * cellSize, 1 * cellSize, (11 * cellSize) + cellSize, (1 * cellSize) + cellSize);
+
+        do Screen.drawRectangle(11 * cellSize, 3 * cellSize, (11 * cellSize) + cellSize, (3 * cellSize) + cellSize);
+        do Screen.drawRectangle(11 * cellSize, 5 * cellSize, (11 * cellSize) + cellSize, (5 * cellSize) + cellSize);
+
+        do Screen.drawRectangle(12 * cellSize, 1 * cellSize, (12 * cellSize) + cellSize, (1 * cellSize) + cellSize);
+
+        do Screen.drawRectangle(12 * cellSize, 3 * cellSize, (12 * cellSize) + cellSize, (3 * cellSize) + cellSize);
+        do Screen.drawRectangle(12 * cellSize, 5 * cellSize, (12 * cellSize) + cellSize, (5 * cellSize) + cellSize);
+
+        let animationCounter = 0;
+        while(animationCounter < 3){
+            
+            do Screen.setColor(true);
+            do Screen.drawRectangle(14 * cellSize, 5 * cellSize, (14 * cellSize) + cellSize, (5 * cellSize) + cellSize);
+            do Sys.wait(1000);
+            do Screen.setColor(false);
+            do Screen.drawRectangle(14 * cellSize, 5 * cellSize, (14 * cellSize) + cellSize, (5 * cellSize) + cellSize);
+            do Sys.wait(1000);
+            let animationCounter = animationCounter + 1;
+        }
+
+        return;
+    }
+
+    /* Frees memory allocated to this object, we need this in every class 
+    * we need to declare the sub-routine with the method keyword to be a method referenced by the class instance
+    * Liberta o bloco de recursos na memoria que comeca na referencia "this" e que tem alocado o tamanho deste objecto
+    */
+    method void dispose(){
+        do Memory.deAlloc(this);
+        return;
+    }
+}

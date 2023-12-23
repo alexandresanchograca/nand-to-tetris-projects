@@ -1,0 +1,29 @@
+class Main{
+    /* Our main Routine */
+    function void main(){
+        var Checkers checkers;
+        var boolean endLoop;
+        var char keyPressed;
+
+        let checkers = Checkers.new(16, 8);
+
+        let endLoop = false;
+        while(~(endLoop)){
+            do checkers.drawCheckers();
+
+            let keyPressed = Keyboard.keyPressed();
+
+            if(keyPressed){
+                let endLoop = true;
+            }
+
+            do Sys.wait(200);
+        }
+        do checkers.drawBye();
+
+        do checkers.dispose();
+        return;
+    }
+
+
+}

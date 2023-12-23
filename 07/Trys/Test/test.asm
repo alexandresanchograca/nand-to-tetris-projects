@@ -1,0 +1,12 @@
+
+@TRUE
+D;JGT
+@CONTINUE
+0;JMP
+
+(TRUE)
+@SP
+A=M
+M=1
+
+(CONTINUE)
