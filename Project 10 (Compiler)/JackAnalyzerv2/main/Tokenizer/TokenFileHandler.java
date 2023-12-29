@@ -15,7 +15,7 @@ public class TokenFileHandler {
 
     public TokenFileHandler(String sourceFilename){
         this.sourceFilename = sourceFilename;
-        this.targetFilename = sourceFilename.substring(0, sourceFilename.indexOf(".")) + "Tokens";
+        this.targetFilename = sourceFilename.substring(0, sourceFilename.indexOf(".")) + "Tree";
     }
 
     //Could also be done with Files class easier
@@ -40,12 +40,12 @@ public class TokenFileHandler {
         try{
             FileWriter fileWriter =  new FileWriter(targetFilename + ".xml");
 
-            fileWriter.write( "<tokens>" );
+            //fileWriter.write( "<tokens>" );
             while(!tokens.isEmpty()){
                 fileWriter.write( tokens.get(0).toString() );
                 tokens.remove(0);
             }
-            fileWriter.write( "</tokens>" );
+            //fileWriter.write( "</tokens>" );
 
             fileWriter.close();
 

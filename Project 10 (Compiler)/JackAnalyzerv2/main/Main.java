@@ -1,5 +1,6 @@
 package main;
 
+import main.CompileEngine.JackCompileEngine;
 import main.Tokenizer.JackTokenizer;
 
 import java.io.IOException;
@@ -34,8 +35,7 @@ public class Main {
 
             }else if( validFileExtension(filepath)){
 
-                JackTokenizer jackTokenizer = new JackTokenizer(filename);
-                jackTokenizer.run();
+                JackCompileEngine JackCompileEngine = new JackCompileEngine(filename);
 
             }
 
@@ -53,8 +53,7 @@ public class Main {
                 .forEach(file -> {
                             try {
 
-                                JackTokenizer jackTokens = new JackTokenizer(file.toString());
-                                jackTokens.run();
+                                JackCompileEngine jackTokens = new JackCompileEngine(file.toString());
 
                             } catch (IOException e) {
                                 throw new RuntimeException(e);

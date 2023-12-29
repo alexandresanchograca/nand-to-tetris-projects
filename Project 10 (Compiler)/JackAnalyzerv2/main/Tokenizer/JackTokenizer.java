@@ -29,7 +29,9 @@ public class JackTokenizer {
             System.out.println("Compilation failed, an error occurred!");
             System.exit(1);
         }
+    }
 
+    public void writeOutputFile() throws IOException {
         fileHandler.writeFile(tokens);
     }
 
@@ -217,5 +219,13 @@ public class JackTokenizer {
     }
     private void report(int line, String where, String message) {
         System.err.println("[line " + line + "] Error" + where + ": " + message);
+    }
+
+    public TokenFileHandler getFileHandler() {
+        return fileHandler;
+    }
+
+    public List<Token> getTokens() {
+        return tokens;
     }
 }

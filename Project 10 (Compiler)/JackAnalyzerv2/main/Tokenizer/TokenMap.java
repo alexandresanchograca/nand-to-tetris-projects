@@ -9,9 +9,20 @@ public class TokenMap {
     private final Map<String, TokenTypeEnum> symbolsMap;
     private final Map<String, TokenTypeEnum> keywordsMap;
 
+    private final Map<String, TokenTypeEnum> primitiveTypes;
+    private final Map<String, TokenTypeEnum> subroutineDecs;
+    private final Map<String, TokenTypeEnum> subroutineTypes;
+    private final Map<String, TokenTypeEnum> statementTypes;
+
     private TokenMap(){
         this.keywordsMap = setMapKeywords();
         this.symbolsMap = setSymbolsMap();
+
+        //Aditional maps
+        this.primitiveTypes = setPrimitiveTypes();
+        this.subroutineDecs = setSubroutineDecs();
+        this.subroutineTypes = setSubroutineTypes();
+        this.statementTypes = setStatementTypes();
     };
 
 
@@ -29,6 +40,22 @@ public class TokenMap {
 
     public boolean containsKeywordKey(String key){
         return keywordsMap.containsKey(key);
+    }
+
+    public boolean containsPrimitiveTypeKey(String key){
+        return primitiveTypes.containsKey(key);
+    }
+
+    public boolean containsSubRoutineDec(String key){
+        return subroutineDecs.containsKey(key);
+    }
+
+    public boolean containsSubRoutineType(String key){
+        return subroutineTypes.containsKey(key);
+    }
+
+    public boolean containsStatement(String key){
+        return statementTypes.containsKey(key);
     }
 
     public TokenTypeEnum getSymbol(String key){
@@ -86,6 +113,40 @@ public class TokenMap {
         tokenMap.put( ">", TokenTypeEnum.SYMBOL );
         tokenMap.put( "=", TokenTypeEnum.SYMBOL );
         tokenMap.put( "~", TokenTypeEnum.SYMBOL );
+        return tokenMap;
+    }
+
+    private Map<String, TokenTypeEnum> setPrimitiveTypes(){
+        Map<String, TokenTypeEnum> tokenMap = new HashMap<>();
+        tokenMap.put( "int", TokenTypeEnum.KEYWORD );
+        tokenMap.put( "char", TokenTypeEnum.KEYWORD );
+        tokenMap.put( "boolean", TokenTypeEnum.KEYWORD );
+        return tokenMap;
+    }
+
+    private Map<String, TokenTypeEnum> setSubroutineDecs(){
+        Map<String, TokenTypeEnum> tokenMap = new HashMap<>();
+        tokenMap.put( "constructor", TokenTypeEnum.KEYWORD );
+        tokenMap.put( "method", TokenTypeEnum.KEYWORD );
+        tokenMap.put( "function", TokenTypeEnum.KEYWORD );
+        return tokenMap;
+    }
+
+    private Map<String, TokenTypeEnum> setSubroutineTypes(){
+        Map<String, TokenTypeEnum> tokenMap = new HashMap<>();
+        tokenMap.put( "void", TokenTypeEnum.KEYWORD );
+        tokenMap.put( "int", TokenTypeEnum.KEYWORD );
+        tokenMap.put( "char", TokenTypeEnum.KEYWORD );
+        tokenMap.put( "boolean", TokenTypeEnum.KEYWORD );
+        return tokenMap;
+    }
+
+    private Map<String, TokenTypeEnum> setStatementTypes(){
+        Map<String, TokenTypeEnum> tokenMap = new HashMap<>();
+        tokenMap.put( "let", TokenTypeEnum.KEYWORD );
+        tokenMap.put( "do", TokenTypeEnum.KEYWORD );
+        tokenMap.put( "while", TokenTypeEnum.KEYWORD );
+        tokenMap.put( "return", TokenTypeEnum.KEYWORD );
         return tokenMap;
     }
 }
