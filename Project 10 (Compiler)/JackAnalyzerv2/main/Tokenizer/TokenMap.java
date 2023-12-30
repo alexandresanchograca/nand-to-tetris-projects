@@ -14,6 +14,8 @@ public class TokenMap {
     private final Map<String, TokenTypeEnum> subroutineTypes;
     private final Map<String, TokenTypeEnum> statementTypes;
 
+    private final Map<String, TokenTypeEnum> termSymbols;
+    private final Map<String, TokenTypeEnum> operatorMap;
     private TokenMap(){
         this.keywordsMap = setMapKeywords();
         this.symbolsMap = setSymbolsMap();
@@ -23,6 +25,8 @@ public class TokenMap {
         this.subroutineDecs = setSubroutineDecs();
         this.subroutineTypes = setSubroutineTypes();
         this.statementTypes = setStatementTypes();
+        this.termSymbols = setTermSymbols();
+        this.operatorMap = setOperandMap();
     };
 
 
@@ -52,6 +56,14 @@ public class TokenMap {
 
     public boolean containsSubRoutineType(String key){
         return subroutineTypes.containsKey(key);
+    }
+
+    public boolean containsTermSymbol(String key){
+        return termSymbols.containsKey(key);
+    }
+
+    public boolean containsOperator(String key){
+        return operatorMap.containsKey(key);
     }
 
     public boolean containsStatement(String key){
@@ -147,6 +159,29 @@ public class TokenMap {
         tokenMap.put( "do", TokenTypeEnum.KEYWORD );
         tokenMap.put( "while", TokenTypeEnum.KEYWORD );
         tokenMap.put( "return", TokenTypeEnum.KEYWORD );
+        return tokenMap;
+    }
+
+    private Map<String, TokenTypeEnum> setTermSymbols(){
+        Map<String, TokenTypeEnum> tokenMap = new HashMap<>();
+        tokenMap.put( ".", TokenTypeEnum.KEYWORD );
+        tokenMap.put( "[", TokenTypeEnum.KEYWORD );
+        tokenMap.put( "(", TokenTypeEnum.KEYWORD );
+        return tokenMap;
+    }
+
+    private Map<String, TokenTypeEnum> setOperandMap(){
+        Map<String, TokenTypeEnum> tokenMap = new HashMap<>();
+        tokenMap.put( "+", TokenTypeEnum.SYMBOL );
+        tokenMap.put( "-", TokenTypeEnum.SYMBOL );
+        tokenMap.put( "*", TokenTypeEnum.SYMBOL );
+        tokenMap.put( "/", TokenTypeEnum.SYMBOL );
+        tokenMap.put( "&", TokenTypeEnum.SYMBOL );
+        tokenMap.put( "|", TokenTypeEnum.SYMBOL );
+        tokenMap.put( "<", TokenTypeEnum.SYMBOL );
+        tokenMap.put( ">", TokenTypeEnum.SYMBOL );
+        tokenMap.put( "=", TokenTypeEnum.SYMBOL );
+        tokenMap.put( "~", TokenTypeEnum.SYMBOL );
         return tokenMap;
     }
 }

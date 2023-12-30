@@ -343,16 +343,28 @@ public class JackCompileEngine {
         letStatement.addChild( currentTokenVal );
 
         currentTokenVal = advance();
+        if(currentTokenVal.getTokenValue().equals("[")){
+            letStatement.addChild(currentTokenVal);
+
+            currentTokenVal = advance();
+            compileExpr(letStatement);
+
+            currentTokenVal = previous();
+            letStatement.addChild( currentTokenVal );
+            currentTokenVal = advance();
+        }
+
+        //currentTokenVal = advance();
         if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.SYMBOL) || !currentTokenVal.getTokenValue().equals("=")){
             System.err.println("Not a valid let statement");
             return;
         }
         letStatement.addChild( currentTokenVal );
 
-        advance();
+        currentTokenVal = advance();
         compileExpr(letStatement);
 
-        currentTokenVal = advance();
+        currentTokenVal = previous();
         if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.SYMBOL) || !currentTokenVal.getTokenValue().equals(";")){
             System.err.println("Not a valid let statement");
             return;
@@ -379,7 +391,7 @@ public class JackCompileEngine {
         advance();
         compileExpr(whileStatement);
 
-        currentTokenVal = advance();
+        currentTokenVal = previous();
         if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.SYMBOL) || !currentTokenVal.getTokenValue().equals(")")){
             System.err.println("Not a valid while statement");
             return;
@@ -424,35 +436,11 @@ public class JackCompileEngine {
         //There can be function() or obj.method()
         currentTokenVal = advance();
         if(currentTokenVal.getTokenValue().equals(".")){
-            doStatement.addChild( currentTokenVal );
-
-            currentTokenVal = advance();
-            if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.IDENTIFIER)){
-                System.err.println("Not a valid do statement");
-                return;
-            }
-            doStatement.addChild( currentTokenVal );
-
-            currentTokenVal = advance();
+            compileFunctionCall(doStatement);
         }
-
-        if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.SYMBOL) || !currentTokenVal.getTokenValue().equals("(")){
-            System.err.println("Not a valid do statement");
-            return;
+        else if(currentTokenVal.getTokenValue().equals("(")){
+            compileMethodCall(doStatement);
         }
-        doStatement.addChild( currentTokenVal );
-
-        currentTokenVal = advance();
-        Token expressionList = new Token("", TokenTypeEnum.EXPRESSION_LIST, currentToken);
-        compileExprList(expressionList);
-        doStatement.addChild(expressionList);
-
-        currentTokenVal = previous();
-        if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.SYMBOL) || !currentTokenVal.getTokenValue().equals(")")){
-            System.err.println("Not a valid do statement");
-            return;
-        }
-        doStatement.addChild( currentTokenVal );
 
         currentTokenVal = advance();
         if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.SYMBOL) || !currentTokenVal.getTokenValue().equals(";")){
@@ -476,7 +464,7 @@ public class JackCompileEngine {
         if( !currentTokenVal.getTokenValue().equals(";")){
             compileExpr(retStatement);
             //retStatement.addChild( currentTokenVal );
-            currentTokenVal = advance();
+            currentTokenVal = previous();
         }
 
         if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.SYMBOL) || !currentTokenVal.getTokenValue().equals(";")){
@@ -504,7 +492,7 @@ public class JackCompileEngine {
         advance();
         compileExpr(ifStatement);
 
-        currentTokenVal = advance();
+        currentTokenVal = previous();
         if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.SYMBOL) || !currentTokenVal.getTokenValue().equals(")")){
             System.err.println("Not a valid if statement");
             return;
@@ -566,30 +554,94 @@ public class JackCompileEngine {
 
         Token expr = new Token("", TokenTypeEnum.EXPRESSION, currentToken);
 
-        compileTerm(expr);
-
+        compileTermAlt(expr);
         parentToken.addChild(expr);
+
+        currentTokenVal = previous();
+        if(TokenMap.getInstance().containsOperator(currentTokenVal.getTokenValue())){
+            expr.addChild(currentTokenVal);
+            advance();
+            compileTermAlt(expr);
+        }
+
+        currentTokenVal = previous();
     }
 
-    void compileTerm(Token parentToken){
+    void compileTermAlt(Token parentToken) {
         Token currentTokenVal = previous();
         Token term = new Token("", TokenTypeEnum.TERM, currentToken);
 
-        //currentTokenVal = advance();
-        if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.IDENTIFIER) && !currentTokenVal.getTokenType().equals(TokenTypeEnum.KEYWORD)){
+        if (currentTokenVal.getTokenType().equals(TokenTypeEnum.NOT_DEFINED)) {
             System.err.println("Not a valid term");
             return;
         }
-        term.addChild( currentTokenVal );
 
+        //If its a unary operator
+        if (currentTokenVal.getTokenValue().equals("-") || currentTokenVal.getTokenValue().equals("~")) {
+            term.addChild(currentTokenVal);
+            advance();
+            compileTermAlt(term);
+        }
+        else if (currentTokenVal.getTokenType().equals(TokenTypeEnum.IDENTIFIER)) {
+            term.addChild(currentTokenVal);
+            currentTokenVal = advance();
+            if (currentTokenVal.getTokenValue().equals("[")) {
+                term.addChild(currentTokenVal);
+                currentTokenVal = advance();
+                compileExpr(term);
+                currentTokenVal = previous();
+                term.addChild(currentTokenVal);
+            } else if (currentTokenVal.getTokenValue().equals(".")) {
+                compileFunctionCall(term);
+                currentTokenVal = previous();
+            } else if (currentTokenVal.getTokenValue().equals("(")) {
+                term.addChild(currentTokenVal);
+                compileMethodCall(term);
+                currentTokenVal = advance();
+            }
+            else{
+                parentToken.addChild(term);
+                return;
+            }
+        }
+        else if(currentTokenVal.getTokenValue().equals("(")){
+            term.addChild( currentTokenVal );
+            currentTokenVal = advance();
+            compileExpr(term);
+
+            currentTokenVal = previous();
+            term.addChild(currentTokenVal);
+            if(!currentTokenVal.getTokenValue().equals(")")){
+                parentToken.addChild(term);
+                System.err.println("No closing for term!");
+                return;
+            }
+
+        }
+        else if(currentTokenVal.getTokenValue().equals("[")){
+            currentTokenVal = advance();
+
+
+            return;
+        }
+        else {
+            term.addChild(currentTokenVal);
+        }
+
+        if(TokenMap.getInstance().containsOperator(currentTokenVal.getTokenValue())){
+            parentToken.addChild(term);
+            return;
+        }
+
+        currentTokenVal = advance();
         parentToken.addChild(term);
     }
 
     void compileExprList(Token parentToken){
         Token currentTokenVal = previous();
-        if( currentTokenVal.getTokenType().equals(TokenTypeEnum.KEYWORD) || currentTokenVal.getTokenType().equals(TokenTypeEnum.IDENTIFIER)){
+        if( !currentTokenVal.getTokenValue().equals(")")){
             compileExpr(parentToken);
-            currentTokenVal = advance();
+            currentTokenVal = previous();
             //parentToken.addChild( currentTokenVal );
 
             if(currentTokenVal.getTokenValue().equals(",")){
@@ -597,8 +649,49 @@ public class JackCompileEngine {
                 advance();
                 compileExprList(parentToken);
             }
+            else if(currentTokenVal.getTokenValue().equals("(")){
+                parentToken.addChild( currentTokenVal );
+                advance();
+                compileExprList(parentToken);
+            }
 
         }
+    }
+
+    private void compileFunctionCall(Token parentToken){
+        Token currentTokenVal = previous();
+        parentToken.addChild( currentTokenVal );
+
+        currentTokenVal = advance();
+        if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.IDENTIFIER)){
+            System.err.println("Not a valid function call");
+            return;
+        }
+        parentToken.addChild( currentTokenVal );
+
+        currentTokenVal = advance();
+        compileMethodCall(parentToken);
+    }
+
+    private void compileMethodCall(Token parentToken){
+        Token currentTokenVal = previous();
+        if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.SYMBOL) || !currentTokenVal.getTokenValue().equals("(")){
+            System.err.println("Not a valid invoke statement");
+            return;
+        }
+        parentToken.addChild( currentTokenVal );
+
+        Token expressionList = new Token("", TokenTypeEnum.EXPRESSION_LIST, currentToken);
+        currentTokenVal = advance();
+        compileExprList(expressionList);
+        parentToken.addChild(expressionList);
+
+        currentTokenVal = previous();
+        if( !currentTokenVal.getTokenType().equals(TokenTypeEnum.SYMBOL) || !currentTokenVal.getTokenValue().equals(")")){
+            System.err.println("Not a valid invoke statement");
+            return;
+        }
+        parentToken.addChild( currentTokenVal );
     }
 
      private Token advance(){

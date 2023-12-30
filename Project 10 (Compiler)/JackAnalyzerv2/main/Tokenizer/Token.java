@@ -13,7 +13,8 @@ public class Token {
         this.childTokens = new LinkedList<>();
         this.tokenType = tokenType;
         this.line = line;
-        this.tokenValue = getMarkUpToken(tokenValue);
+        this.tokenValue = tokenValue;
+        //this.tokenValue = getMarkUpToken(tokenValue);
     }
 
     private String getMarkUpToken(String tokenVal){
@@ -43,7 +44,7 @@ public class Token {
             childValues += tempToken.toString();
         }
 
-        return tokenType.getTaggedToken(tokenValue + childValues);
+        return tokenType.getTaggedToken(getMarkUpToken(tokenValue) + childValues);
     }
 
     public TokenTypeEnum getTokenType() {

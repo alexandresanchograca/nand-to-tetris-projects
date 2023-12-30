@@ -11,5 +11,30 @@ import main.Tokenizer.TokenTypeEnum;
  * parse tree / syntax tree
  * */
 public abstract class Expr {
+    public static class Binary{
 
+        private String firstExpr;
+        private Token operand;
+        private String secondExpr;
+
+        public Binary(String firstExpr, Token operand, String secondExpr){
+            this.firstExpr = firstExpr;
+            this.operand = operand;
+            this.secondExpr = secondExpr;
+        }
+
+
+    }
+
+    public static class Unary{
+
+        private String firstExpr;
+        private Token operand;
+
+        public Unary(Token operand, String firstExpr){
+            this.firstExpr = firstExpr;
+            this.operand = operand;
+        }
+
+    }
 }
