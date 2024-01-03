@@ -40,13 +40,11 @@ public class JackCompileEngine {
         //Do our compilation
         compileClass(); //Every compiled file is a single class so we can start here
 
-        //System.out.println(symbolTable);
-
         fileHandler.writeFile(tokensTree);
         vmWriter.close();
     }
 
-    void compileClass(){
+    private void compileClass(){
         Token currentTokenVal = advance();
 
         if( !currentTokenVal.getTokenType().equals(TokenType.KEYWORD) || !currentTokenVal.getTokenValue().equals("class") ){
@@ -87,7 +85,7 @@ public class JackCompileEngine {
         tokensTree.add(classToken);
     }
 
-    void compileClassVarDec(Token parentToken){
+    private void compileClassVarDec(Token parentToken){
         Token currentTokenVal = previous();
 
         //<classVarDec> <keyword> static
@@ -140,7 +138,7 @@ public class JackCompileEngine {
         compileClassVarDec(parentToken);
     }
 
-    void compileSubroutineDec(Token parentToken){
+    private void compileSubroutineDec(Token parentToken){
         Token currentTokenVal = previous();
 
         //<subroutineDec> <keyword> constructor | method | function
@@ -217,7 +215,7 @@ public class JackCompileEngine {
         compileSubroutineDec(parentToken);
     }
 
-    void compileParameterList(Token parentToken){
+    private void compileParameterList(Token parentToken){
         Token currentTokenVal = previous();
 
         //<keyword> int | ...
@@ -251,7 +249,7 @@ public class JackCompileEngine {
         //parentToken.addChild( currentTokenVal );
     }
 
-    void compileSubroutineBody(Token parentToken){
+    private void compileSubroutineBody(Token parentToken){
         Token currentTokenVal = previous();
 
         //<symbol> {
@@ -299,7 +297,7 @@ public class JackCompileEngine {
         parentToken.addChild( currentTokenVal );
     }
 
-    void compileVarDec(Token parentToken){
+    private void compileVarDec(Token parentToken){
         Token currentTokenVal = previous();
 
         if( !currentTokenVal.getTokenType().equals(TokenType.KEYWORD) || !currentTokenVal.getTokenValue().equals("var")){
@@ -345,7 +343,7 @@ public class JackCompileEngine {
         compileVarDec(parentToken);
     }
 
-    void compileNextVarDec(Token parentToken, Token followedToken){
+    private void compileNextVarDec(Token parentToken, Token followedToken){
         Token currentTokenVal = advance();
 
         if( !currentTokenVal.getTokenType().equals(TokenType.SYMBOL) || !currentTokenVal.getTokenValue().equals(",")){
@@ -366,7 +364,7 @@ public class JackCompileEngine {
         compileNextVarDec(parentToken, currentTokenVal);
     }
 
-    void compileStatements(Token parentToken){
+    private void compileStatements(Token parentToken){
         Token currentTokenVal = previous();
 
         //<keyword> do | let | if | ...
@@ -397,7 +395,7 @@ public class JackCompileEngine {
         //Recursive call
         compileStatements(parentToken);
     }
-    void compileLet(Token parentToken){
+    private void compileLet(Token parentToken){
         Token currentTokenVal = previous();
         Token letStatement = new Token("", TokenType.LET_STATEMENT, currentToken);
         letStatement.addChild( currentTokenVal );
@@ -463,7 +461,7 @@ public class JackCompileEngine {
         advance();
     }
 
-    void compileWhile(Token parentToken){
+    private void compileWhile(Token parentToken){
         Token currentTokenVal = previous();
         Token whileStatement = new Token("", TokenType.WHILE_STATEMENT, currentToken);
         whileStatement.addChild( currentTokenVal );
@@ -521,7 +519,7 @@ public class JackCompileEngine {
         vmWriter.writeLabel(endWhileLabel);
     }
 
-    void compileDo(Token parentToken){
+    private void compileDo(Token parentToken){
         Token currentTokenVal = previous();
         Token doStatement = new Token("", TokenType.DO_STATEMENT, currentToken);
         doStatement.addChild( currentTokenVal );
@@ -577,7 +575,7 @@ public class JackCompileEngine {
         advance();
     }
 
-    void compileReturn(Token parentToken){
+    private void compileReturn(Token parentToken){
         Token currentTokenVal = previous();
         Token retStatement = new Token("", TokenType.RET_STATEMENT, currentToken);
         retStatement.addChild( currentTokenVal );
@@ -603,7 +601,7 @@ public class JackCompileEngine {
         vmWriter.writeReturn();
     }
 
-    void compileIf(Token parentToken){
+    private void compileIf(Token parentToken){
         Token currentTokenVal = previous();
         Token ifStatement = new Token("", TokenType.IF_STATEMENT, currentToken);
         ifStatement.addChild( currentTokenVal );
@@ -696,7 +694,7 @@ public class JackCompileEngine {
         vmWriter.writeLabel(ifEndScoped);
     }
 
-    public Token compileExpr(Token parentToken){
+    private Token compileExpr(Token parentToken){
         Token currentTokenVal = previous();
 
         Token expr = new Token("", TokenType.EXPRESSION, currentToken);
@@ -718,7 +716,7 @@ public class JackCompileEngine {
         return expr;
     }
 
-    void compileTermAlt(Token parentToken) {
+    private void compileTermAlt(Token parentToken) {
         Token currentTokenVal = previous();
         Token term = new Token("", TokenType.TERM, currentToken);
 
@@ -843,7 +841,7 @@ public class JackCompileEngine {
         parentToken.addChild(term);
     }
 
-    void compileExprList(Token parentToken){
+    private void compileExprList(Token parentToken){
         Token currentTokenVal = previous();
         if( !currentTokenVal.getTokenValue().equals(")")){
             compileExpr(parentToken);
