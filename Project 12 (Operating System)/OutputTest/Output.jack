@@ -223,7 +223,7 @@ class Output {
             }
 
             let memValue = Memory.peek(startRowAddress); 
-            let memValue = memValue | bitmap;
+            let memValue = memValue | bitmap; //Bitwise or to maintain the other 8 bit row values
             do Memory.poke(startRowAddress, memValue);
             let i = i + 1;
         }
