@@ -219,11 +219,11 @@ class Output {
 
             let bitmap = mappedChar[i];
             if((cursorCol & 1) = 1){ //If odd
-                let bitmap = bitmap * 256;
+                let bitmap = bitmap * 256; //Reversing the binary number 0011 -> 1100
             }
 
             let memValue = Memory.peek(startRowAddress); 
-            let memValue = memValue & 255 | bitmap;
+            let memValue = memValue | bitmap;
             do Memory.poke(startRowAddress, memValue);
             let i = i + 1;
         }

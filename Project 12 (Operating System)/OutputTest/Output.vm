@@ -1600,8 +1600,6 @@ push local 2
 call Memory.peek 1
 pop local 1
 push local 1
-push constant 255
-and
 push local 4
 or
 pop local 1
