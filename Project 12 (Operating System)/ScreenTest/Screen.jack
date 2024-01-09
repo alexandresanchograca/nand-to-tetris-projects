@@ -1,0 +1,104 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 256 rows (indexed 0..255, top to bottom)
+ * of 512 pixels each (indexed 0..511, left to right). The top left pixel on 
+ * the screen is indexed (0,0).
+ */
+
+class Screen{
+    static Array screen;
+
+    /** Initializes the Screen. */
+    function void init() {
+        let screen = 16384;
+    }
+
+    /** Erases the entire screen. */
+    function void clearScreen() {
+    }
+
+    /** Sets the current color, to be used for all subsequent drawXXX commands.
+     *  Black is represented by true, white by false. */
+    function void setColor(boolean b) {
+    }
+
+    /* Draws a pixel on a x : 512 y: 256 screen
+    * the memory map associated with this pixel
+    * is confined to RAM memory space 16384 to 24575
+    */
+    function void drawPixel(int x, int y){
+        var pixelAddress;
+        var memValue;
+        var modValue;
+        let pixelAddress = ((32 * y) + (x / 16)) + 16384;
+        let memValue = Memory.peek(pixelAddress); 
+        //We need to the the X % 16 calculation to get our bit drawing adress, ex: 450 % 16 = 2 = 00000000000000X0
+
+        do Memory.poke(pixelAddress, memValue | modValue); //Bitwise OR to not erase the previously drawn pixels
+    }
+
+    /* Very efficient algorithm as it only involves addition and sub */
+    function void drawLine(int xStart, int yStart, int xEnd, int yEnd){
+        var int x, y, dx, dy;
+        var int a, b;
+        var angleDiff;
+        let x = xStart;
+        let y = yStart;
+        let dx = xEnd - xStart; //Delta of X value
+        let dy = yEnd - yStart; //Delta of Y value
+        let a = 0;
+        let b = 0;
+        let angleDiff = 0;
+
+        //We can check if the line horizontal or vertical and draw
+        //using a different algorithm, checking if y1 equals y2 or x1 equals x2
+
+
+        while((a < dx) & (b < dy)){
+            do drawPixel(x + a, y + b);
+
+            /*If the current angle is superior to the desired angle
+            * we draw to the right to justify/correct the desired angle
+            */
+            if(angleDiff < 0){
+                let a = a + 1;
+
+                let angleDiff = angleDiff + dy;
+            }else{ 
+                let b = b + 1;
+
+                let angleDiff = angleDiff - dx;
+            } 
+        }
+    }
+
+    /** Draws a filled rectangle whose top left corner is (x1, y1)
+     * and bottom right corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+    }
+
+    function void drawCircle(int xCenter, int yCenter, int r){
+        var int dx, dy;
+
+        //Overflow handler
+        if(r > 181){
+            return;
+        }
+
+        //Loop
+        do drawLine(
+            xCenter - Math.sqrt( ((r*r) - (dy*dy))),
+            yCenter + dy,
+            xCenter + Math.sqrt( ((r*r) - (dy*dy))),
+            yCenter + dy
+            );
+    }
+
+
+
+}
