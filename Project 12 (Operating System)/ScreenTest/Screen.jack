@@ -11,20 +11,45 @@
  */
 
 class Screen{
-    static Array screen;
+    static int screenAddr;
+    static boolean currentColor;
+    static Array powerMod; //All the values of 2^k being k = {0, 1, ..., 15}
 
     /** Initializes the Screen. */
     function void init() {
-        let screen = 16384;
+        let screenAddr = 16384;
+        let currentColor = true; //True is black
+
+        //For drawing performance, we could also use Math.pow() each drawPixel but we know the finite value range
+        do Screen.initPowerMod();
+        return;
+    }
+
+    function void initPowerMod(){
+        var int i;
+        let powerMod = Array.new(16);
+        while(i < 16){
+            let powerMod[i] = Screen.pow(2, i);
+            let i = i + 1;
+        }
+        return;
     }
 
     /** Erases the entire screen. */
     function void clearScreen() {
+        var int i;
+        while(i < 8192){
+            do Memory.poke(i + 16384, 0);
+            let i = i + 1;
+        }
+        return;
     }
 
     /** Sets the current color, to be used for all subsequent drawXXX commands.
      *  Black is represented by true, white by false. */
     function void setColor(boolean b) {
+        let currentColor = b;
+        return;
     }
 
     /* Draws a pixel on a x : 512 y: 256 screen
@@ -32,21 +57,44 @@ class Screen{
     * is confined to RAM memory space 16384 to 24575
     */
     function void drawPixel(int x, int y){
-        var pixelAddress;
-        var memValue;
-        var modValue;
+        var int pixelAddress, memValue, modValue;
         let pixelAddress = ((32 * y) + (x / 16)) + 16384;
         let memValue = Memory.peek(pixelAddress); 
-        //We need to the the X % 16 calculation to get our bit drawing adress, ex: 450 % 16 = 2 = 00000000000000X0
+        //We need to the the X % 16 calculation to get our bit drawing adress, ex: 450 % 16 = 2 = 2x2 = 0000000000000X00
+        //In this case x & 15 will give us the power of 2 (k) on 2^k. After 2^k we will know the bit to modify
+        //let modValue = Screen.pow(2, x & 15); //Less performance alternative
+        let modValue = powerMod[x & 15]; //Should be a math function
+
+        if(~currentColor){
+            do Memory.poke(pixelAddress, memValue & ~modValue); //Bitwise OR to not erase the previously drawn pixels
+            return;
+        }
 
         do Memory.poke(pixelAddress, memValue | modValue); //Bitwise OR to not erase the previously drawn pixels
+        return;
     }
 
     /* Very efficient algorithm as it only involves addition and sub */
     function void drawLine(int xStart, int yStart, int xEnd, int yEnd){
-        var int x, y, dx, dy;
+        var int x, y, dx, dy, temp;
         var int a, b;
-        var angleDiff;
+        var int angleDiff, fNeg;
+
+        if(xStart > xEnd){
+            let temp = xStart;
+            let xStart = xEnd;
+            let xEnd = temp;
+            let temp = yStart;
+            let yStart = yEnd;
+            let yEnd = temp;
+        }
+
+        if((yStart > yEnd) & (xStart = xEnd)){
+            let temp = yStart;
+            let yStart = yEnd;
+            let yEnd = temp;
+        }
+
         let x = xStart;
         let y = yStart;
         let dx = xEnd - xStart; //Delta of X value
@@ -55,31 +103,43 @@ class Screen{
         let b = 0;
         let angleDiff = 0;
 
+        let fNeg = 1;
+        if(dy < 0){
+            let fNeg = -1;
+        }
+
         //We can check if the line horizontal or vertical and draw
         //using a different algorithm, checking if y1 equals y2 or x1 equals x2
-
-
-        while((a < dx) & (b < dy)){
-            do drawPixel(x + a, y + b);
+        while((a < dx) | (b < dy)){
+            do Screen.drawPixel(x + a, y + b);
 
             /*If the current angle is superior to the desired angle
             * we draw to the right to justify/correct the desired angle
             */
-            if(angleDiff < 0){
-                let a = a + 1;
-
-                let angleDiff = angleDiff + dy;
+            if((angleDiff < 0) | (dx = 0) ){
+                let b = b + (1 * fNeg);
+                let angleDiff = angleDiff + dx;
             }else{ 
-                let b = b + 1;
-
-                let angleDiff = angleDiff - dx;
-            } 
+                let a = a + 1;
+                let angleDiff = angleDiff - (dy * fNeg);
+            }
         }
+        return;
     }
 
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      * and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
+        var int i, j, dx, dy;
+        let dx = Math.abs(x2 - x1);
+        let dy = Math.abs(y2 - y1);
+         
+        let i = x1;
+        while(i < x2){ //O(n) performance :/
+            do Screen.drawLine(i, y1, i, y2);
+            let i = i + 1;
+        }
+        return;
     }
 
     function void drawCircle(int xCenter, int yCenter, int r){
@@ -90,15 +150,34 @@ class Screen{
             return;
         }
 
+        let dy = -r; //Entire circle is r + r
+
         //Loop
-        do drawLine(
-            xCenter - Math.sqrt( ((r*r) - (dy*dy))),
-            yCenter + dy,
-            xCenter + Math.sqrt( ((r*r) - (dy*dy))),
-            yCenter + dy
+        while(dy < r){
+            
+            do Screen.drawLine(
+                xCenter - Math.sqrt( ((r*r) - (dy*dy))),
+                yCenter + dy,
+                xCenter + Math.sqrt( ((r*r) - (dy*dy))),
+                yCenter + dy
             );
+
+            let dy = dy + 1;
+        }
+
+        return;
     }
 
+    //This should be in math class
+    function int pow(int base, int exponent){ 
+        var int result, i;
 
-
+        let result = 1;
+        let i = 0;
+        while(i < exponent){
+            let result = result * base;
+            let i = i + 1;
+        }
+        return result;
+    }
 }
