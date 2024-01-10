@@ -29,7 +29,7 @@ class Screen{
         var int i;
         let powerMod = Array.new(16);
         while(i < 16){
-            let powerMod[i] = Screen.pow(2, i);
+            let powerMod[i] = Math.pow(2, i);
             let i = i + 1;
         }
         return;
@@ -62,7 +62,7 @@ class Screen{
         let memValue = Memory.peek(pixelAddress); 
         //We need to the the X % 16 calculation to get our bit drawing adress, ex: 450 % 16 = 2 = 2x2 = 0000000000000X00
         //In this case x & 15 will give us the power of 2 (k) on 2^k. After 2^k we will know the bit to modify
-        //let modValue = Screen.pow(2, x & 15); //Less performance alternative
+        //let modValue = Math.pow(2, x & 15); //Less performance alternative
         let modValue = powerMod[x & 15]; //Should be a math function
 
         if(~currentColor){
@@ -166,18 +166,5 @@ class Screen{
         }
 
         return;
-    }
-
-    //This should be in math class
-    function int pow(int base, int exponent){ 
-        var int result, i;
-
-        let result = 1;
-        let i = 0;
-        while(i < exponent){
-            let result = result * base;
-            let i = i + 1;
-        }
-        return result;
     }
 }
