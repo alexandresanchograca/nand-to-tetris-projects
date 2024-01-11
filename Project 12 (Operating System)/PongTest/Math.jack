@@ -1,7 +1,19 @@
 class Math{
     static Array arr;
+    static Array powOfTwo;
 
     function void init(){ //Executed by the OS
+        do Math.setPowerOfTwoArr(); 
+        return;
+    }
+
+        function void setPowerOfTwoArr(){
+        var int i;
+        let powOfTwo = Array.new(16);
+        while(i < 16){
+            let powOfTwo[i] = Math.pow(2, i);
+            let i = i + 1;
+        }
         return;
     }
 
@@ -91,8 +103,8 @@ class Math{
         while( ~(j < 0)){
             
             //Formula : (y + 2^j - 1)^2 <= x
-            let firstPower = y + Math.pow(2,j);
-            let secPower = Math.pow(firstPower, 2);
+            let firstPower = y + powOfTwo[j];
+            let secPower = firstPower * firstPower;
             if( ~(secPower > x) &  (secPower > 0)){
                 let y = firstPower;
             }
