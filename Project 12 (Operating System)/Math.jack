@@ -1,0 +1,115 @@
+class Math{
+    static Array arr;
+
+    function void init(){ //Executed by the OS
+        return;
+    }
+
+    function int abs(int operandOne){
+        if(operandOne < 0){
+            let operandOne = operandOne * -1;
+        }
+        return operandOne;
+    }
+
+    function int multiply(int operandOne, int operandTwo){
+        var int i, sum, shiftedX, ithBit;
+        //Create array to store operandTwo value in each index
+        let shiftedX = operandOne;
+        let sum = 0;
+        let i = 0;
+        while(i < 16){ //Reading and converting a value to binary
+
+            if(ithBit = 0){
+                let ithBit = 1;
+            }else{
+                let ithBit = ithBit + ithBit;
+            }
+
+            if((operandTwo & ithBit)){
+                let sum = sum + shiftedX;
+            }
+
+            let shiftedX = shiftedX + shiftedX; //Shifting operandOne by 1 bit
+            let i = i + 1;
+        }
+        
+        return sum;
+    }
+
+    
+    function int divide(int operandOne, int operandTwo){
+        var int quocient, negNum;
+        
+        let negNum = 1;
+        if(operandOne < 0){
+            let negNum = -1;
+            let operandOne = operandOne * negNum;
+        }
+
+        if(operandTwo < 0){
+            let negNum = -1;
+            let operandTwo = operandTwo * negNum;
+        }
+
+        if((operandTwo > operandOne) | (operandTwo < 0)){
+            return 0;
+        }
+
+        let quocient = Math.divide(operandOne, 2 * operandTwo);
+
+        if((operandOne - (2 * quocient * operandTwo)) < operandTwo){
+            return 2 * quocient * negNum;
+        }
+        else{
+            return 2 * quocient * negNum + 1;
+        }
+    }
+
+    function int max(int operandOne, int operandTwo){
+        if(operandOne > operandTwo){
+            return operandOne;
+        }
+        
+        return operandTwo;
+    }
+
+    function int min(int operandOne, int operandTwo){
+        if(operandOne < operandTwo){
+            return operandOne;
+        }
+        
+        return operandTwo;
+    }
+
+    function int sqrt(int x){
+        var int j, y, firstPower, secPower;
+        //We can only store values up to 16 bits, 32767 decimal value
+        let j = 16 / 2 - 1; //n bits / 2 - 1
+        let y = 0;
+
+        while( ~(j < 0)){
+            
+            //Formula : (y + 2^j - 1)^2 <= x
+            let firstPower = y + Math.pow(2,j);
+            let secPower = Math.pow(firstPower, 2);
+            if( ~(secPower > x) &  (secPower > 0)){
+                let y = firstPower;
+            }
+            let j = j - 1;
+        }
+        return y;
+    }
+
+    function int pow(int base, int exponent){ 
+        var int result, i;
+
+        let result = 1;
+        let i = 0;
+        while(i < exponent){
+            let result = result * base;
+            let i = i + 1;
+        }
+        return result;
+    }
+}

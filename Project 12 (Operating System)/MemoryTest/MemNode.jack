@@ -1,0 +1,34 @@
+class MemNode{
+
+    field int size;
+    field int next;
+
+    constructor void new(int size){
+        let this.size = size;
+        let this.next = 0;
+        return this;
+    }
+
+    method void setSize(int nSize){
+        let size = nSize;
+        return;
+    }
+
+    method int getSize(){
+        return size;
+    }
+
+    method int getNext(){
+        return next;
+    }
+
+    method void setNext(int nNext){
+        let next = nNext;
+        return;
+    }
+
+    method void dispose(){
+        do Memory.deAlloc(this);
+        return;
+    }
+}
