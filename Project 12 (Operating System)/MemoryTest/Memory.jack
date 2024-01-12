@@ -61,7 +61,7 @@ class Memory{
             return nBlock + 2;
         }
 
-        return 0; //not found
+        return 0; //no space found for allocation, we could defragment the memory here TODO
     }
 
     function void append(Array heapReference){
