@@ -1,19 +1,20 @@
 class Memory{
+    static int free; //Heap base ptr
     static Array ram;
-    static int heap;
+    static Array heap;
     static Array freeList;
-    static Array tailNode;
 
     /* Setting up the freeList - Linked list for memory allocation */
     function void init(){
         let ram = 0;
         let heap = 2048; //heap base address
-
-        //Init our freelist
-        let freeList = heap;
+        let free = 2048;
+        let heap[0] = 0; //Next node of the list
+        let heap[1] = 14335; //Length of the block (The value)
+        
+        let freeList = 2048;
         let freeList[0] = 0; //Next node of the list
         let freeList[1] = 14335 - 1; //Length of the block (The value)
-        let tailNode = freeList;
         return;
     }
 
@@ -37,8 +38,8 @@ class Memory{
 
         let allocationSize = size + 2;
 
-        let previousTemp = freeList;
-        let temp = freeList;
+        let previousTemp = heap;
+        let temp = heap;
         while(~(temp[0] = 0)){
 
             if(temp[1] > allocationSize){
@@ -65,10 +66,18 @@ class Memory{
     }
 
     function void append(Array heapReference){
-        let tailNode[0] = heapReference;
-        let tailNode = heapReference;
+        var Array temp;
+
+        let temp = heap;
+        while(~(temp[0] = 0)){ //Loop to the last element of the LL
+            let temp = temp[0];
+        }
+
+        let temp[0] = heapReference;
+
         return;
     }
+
 
     /* Frees the block of memory and put it on the end of the
     linked list of heap memory segments (append) */
@@ -76,4 +85,6 @@ class Memory{
        do Memory.append(obj - 2);
        return;
     }
+
+
 }
