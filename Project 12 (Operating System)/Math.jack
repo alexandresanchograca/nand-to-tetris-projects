@@ -3,18 +3,29 @@ class Math{
     static Array powOfTwo;
 
     function void init(){ //Executed by the OS
-        do Math.setPowerOfTwoArr(); 
+        let powOfTwo = Array.new(17);
+        let powOfTwo[0] = 1;
+        let powOfTwo[1] = 2;
+        let powOfTwo[2] = 4;
+        let powOfTwo[3] = 8;
+        let powOfTwo[4] = 16;
+        let powOfTwo[5] = 32;
+        let powOfTwo[6] = 64;
+        let powOfTwo[7] = 128;
+        let powOfTwo[8] = 256;
+        let powOfTwo[9] = 512;
+        let powOfTwo[10] = 1024;
+        let powOfTwo[11] = 2048;
+        let powOfTwo[12] = 4096;
+        let powOfTwo[13] = 8192;
+        let powOfTwo[14] = 16384;
+        let powOfTwo[15] = 16384 + 16384;
+        let powOfTwo[16] = 0;
         return;
     }
 
-        function void setPowerOfTwoArr(){
-        var int i;
-        let powOfTwo = Array.new(16);
-        while(i < 16){
-            let powOfTwo[i] = Math.pow(2, i);
-            let i = i + 1;
-        }
-        return;
+    function Array getPowTwo(){
+        return powOfTwo;
     }
 
     function int abs(int operandOne){

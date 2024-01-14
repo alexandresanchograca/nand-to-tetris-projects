@@ -21,17 +21,7 @@ class Screen{
         let currentColor = true; //True is black
 
         //For drawing performance, we could also use Math.pow() each drawPixel but we know the finite value range
-        do Screen.initPowerMod();
-        return;
-    }
-
-    function void initPowerMod(){
-        var int i;
-        let powerMod = Array.new(16);
-        while(i < 16){
-            let powerMod[i] = Math.pow(2, i);
-            let i = i + 1;
-        }
+        let powerMod =  Math.getPowTwo();
         return;
     }
 
@@ -63,7 +53,7 @@ class Screen{
         //We need to the the X % 16 calculation to get our bit drawing adress, ex: 450 % 16 = 2 = 2x2 = 0000000000000X00
         //In this case x & 15 will give us the power of 2 (k) on 2^k. After 2^k we will know the bit to modify
         //let modValue = Math.pow(2, x & 15); //Less performance alternative
-        let modValue = powerMod[x & 15]; //Should be a math function
+        let modValue = powerMod[x & 15];
 
         if(~currentColor){
             do Memory.poke(pixelAddress, memValue & ~modValue);
@@ -74,7 +64,11 @@ class Screen{
         return;
     }
 
-    /* Very efficient algorithm as it only involves addition and sub */
+    /* My implementation of draw line, the fNeg involves additional instructions
+    which may not result in a super efficient implementation, but I found it was
+    my personal first approach so I stuck with it for fun. An alternative to this
+    would be to make an if/else statement that would be more efficient.
+     */
     function void drawLine(int xStart, int yStart, int xEnd, int yEnd){
         var int x, y, dx, dy, temp;
         var int a, b;
@@ -126,20 +120,85 @@ class Screen{
         }
         return;
     }
-
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      * and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
         var int i, j, dx, dy;
-        let dx = Math.abs(x2 - x1);
-        let dy = Math.abs(y2 - y1);
-         
-        let i = x1;
-        while(i < x2){ //O(n) performance :/
-            do Screen.drawLine(i, y1, i, y2);
-            let i = i + 1;
+        var int temp, firstAddr, lastAddr, firstVal, lastVal, leftMask, rightMask, mask;
+        var int firstMemValue, lastMemValue;
+
+        if(x1 > x2){
+            let temp = x1;
+            let x1 = x2;
+            let x2 = temp;
+        }
+
+        if(y1 > y2){
+            let temp = y1;
+            let y1 = y2;
+            let y2 = temp;
+        }
+
+        let firstAddr = ((32 * y1) + (x1 / 16)) + 16384; 
+        let lastAddr = ((32 * y1) + (x2 / 16)) + 16384;
+
+        let leftMask = ~(powerMod[x1 & 15] - 1);
+        let rightMask = powerMod[ (x2 & 15) + 1 ] - 1;
+
+        while(~(y2 < y1)){ //While is 0 or more lines to draw
+            if(firstAddr = lastAddr){ //Same 16 bit register
+                let mask = leftMask & rightMask;
+                let firstMemValue = Memory.peek(firstAddr);
+                if(currentColor){
+                    do Memory.poke(firstAddr, firstMemValue | mask);
+                }else{
+                    do Memory.poke(firstAddr, firstMemValue & ~mask);
+                }
+            }
+            else{
+                let firstMemValue = Memory.peek(firstAddr);
+                let lastMemValue = Memory.peek(lastAddr);
+                //Writing pixels of the first and last adresses on this y line
+                if(currentColor){
+                    do Memory.poke(firstAddr, firstMemValue | leftMask);
+                    do Memory.poke(lastAddr, lastMemValue | rightMask);
+                }
+                else{
+                    do Memory.poke(firstAddr, firstMemValue & ~leftMask);
+                    do Memory.poke(lastAddr, lastMemValue & ~rightMask);
+                }
+
+                //Writing the pixels between first and last adresses
+                if((lastAddr - firstAddr) > 1){
+                    let temp = firstAddr + 1; //Getting next address
+                    while(lastAddr > temp){
+                        do Memory.poke(temp, currentColor);
+                        let temp = temp + 1;
+                    }
+                }
+            }
+
+            //Going to the next line
+            let firstAddr = firstAddr + 32;
+            let lastAddr = lastAddr + 32;
+            let y1 = y1 + 1;
         }
         return;
+        /* 
+        lets imagine our x1 and x2 is 0 to (16 + 14) = 30
+         Solving for leftMask:
+         0 & 15 = 0 & 1111 = 0000
+         n = 2^0 = 1
+         
+         leftmask = not(n - 1) = not(1 - 1) = not(0) = (1111111111111111)base2
+         We are going to fill all the bits to the right
+         
+         Solving for rightMask:
+         30 & 15 = 11110 & 1111 = 1110 = 14
+         n = 2^(14 + 1) = 32768
+
+        rightmask = n - 1 = 32767 = (0111 1111 1111 1111)base2
+        */
     }
 
     function void drawCircle(int xCenter, int yCenter, int r){
